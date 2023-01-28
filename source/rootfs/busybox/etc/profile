@@ -1,0 +1,61 @@
+# /etc/profile: system-wide .profile file for the Bourne shell (sh(1))
+# and Bourne compatible shells (bash(1), ksh(1), ash(1), ...).
+
+PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+EDITOR="vi"			# needed for packages like cron, git-commit
+test -z "$TERM" && TERM="vt100"	# Basic terminal capab. For screen etc.
+
+if [ ! -e /etc/localtime -a ! -e /etc/TZ ]; then
+	TZ="UTC"		# Time Zone. Look at http://theory.uwinnipeg.ca/gnu/glibc/libc_303.html
+				# for an explanation of how to set this to your local timezone.
+	export TZ
+fi
+
+#if [ "$HOME" = "/home/root" ]; then
+#   PATH=$PATH:/usr/local/sbin:/usr/sbin:/sbin
+#fi
+if [ "$PS1" ]; then
+# works for bash and ash (no other shells known to be in use here)
+   PS1='\u@\h:\w\$ '
+fi
+
+if [ -d /etc/profile.d ]; then
+  for i in /etc/profile.d/*.sh ; do
+    if [ -f $i -a -r $i ]; then
+      . $i
+    fi
+  done
+  unset i
+fi
+
+if [ -x /usr/bin/resize ];then
+  # Make sure we are on a serial console (i.e. the device used starts with /dev/tty),
+  # otherwise we confuse e.g. the eclipse launcher which tries do use ssh
+  test "`tty | cut -c1-8`" = "/dev/tty" && resize >/dev/null
+fi
+
+export PATH PS1 OPIEDIR QPEDIR QTDIR EDITOR TERM
+export LANG=en_US.UTF-8
+export HISTFILESIZE=100
+export HISTSIZE=100
+export PROMPT_COMMAND="history -a"
+export QT_QPA_FONTDIR=/usr/share/fonts/ttf
+export QT_QPA_PLATFORM=linuxfb:tty=/dev/fb0
+export QT_QPA_FB_TSLIB=1
+screen_size=$(echo $(fbset |grep -E "timings" |awk '{print $3}'))
+case $screen_size in
+    220) unset QT_QPA_FB_TSLIB
+    ;;
+    213) unset QT_QPA_FB_TSLIB
+    ;;
+esac
+export DISPLAY=:0.0
+export LS_OPTIONS='--color=auto'
+# Useful aliases
+alias ls='ls $LS_OPTIONS -h'
+alias ll='ls $LS_OPTIONS -lhF'
+alias l='ls $LS_OPTIONS -lAhF'
+
+umask 022
+
+

@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Qt5 SerialPort
+Description: Qt SerialPort module
+Version: 5.12.9
+Libs: -L${libdir} -lQt5SerialPort 
+Cflags: -DQT_SERIALPORT_LIB -I${includedir}/QtSerialPort -I${includedir}
+Requires: Qt5Core
+

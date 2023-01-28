@@ -1,0 +1,7 @@
+
+Name: Qt5WebKitWidgets
+Description: Qt WebKitWidgets module
+Version: 5.212.0
+Libs: -L/usr//usr/lib -lQt5WebKitWidgets
+Cflags: -I/usr/include/Qt5WebKitWidgets 
+Requires: 

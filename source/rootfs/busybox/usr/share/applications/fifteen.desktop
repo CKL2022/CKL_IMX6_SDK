@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Fifteen
+Exec=/usr/games/fifteen
+Icon=applications-games
+Terminal=false
+Type=Application
+Categories=Game;
+StartupNotify=true
+X-MB-SingleInstance=true
+Comment=Play Fifteen.

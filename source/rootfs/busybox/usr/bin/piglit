@@ -1,0 +1,148 @@
+#!/usr/bin/env python2
+
+# Copyright (c) 2014 Intel Corporation
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+""" Wrapper for piglit executables
+
+This imports functions from the framework and calls them with the argument
+parts that the parser defined here doesn't konw how to parse.
+
+It is very important that the final parser not generate a help message
+(add_help=False in the constructor arguments), otherwise this parser will
+capture -h/--help and the results will not be useful.
+
+"""
+
+from __future__ import print_function
+
+import os
+import os.path as path
+import sys
+import argparse
+
+def setup_module_search_path():
+    """Add Piglit's data directory to Python's module search path.
+
+    This enables Python to import Piglit's framework module.
+
+    CAUTION: This script must import the framework that *belongs to this
+    script*. Mayhem occurs if this script accidentally imports a framework
+    module that belongs to a different Piglit source tree or belongs to
+    a different Piglit installation.
+
+    CAUTION: This script file must be located in the Piglit source tree or in
+    an installed location.  Otherwise this function may fail to find the
+    framework module or, worse, it may succeed in finding a different Piglit's
+    framework module.
+    """
+
+    # To avoid accidentally importing a framework module that belongs to
+    # a different Piglit, base the search for Piglit's data directory on the
+    # absolute path of the this script and *not* on the process's working
+    # directory.
+    abs_script_dir = os.path.abspath(os.path.dirname(__file__))
+
+    tested_piglit_data_dirs = []
+
+    def is_piglit_data_dir(dirpath):
+        tested_piglit_data_dirs.append(dirpath)
+        return path.exists(path.join(dirpath, 'framework'))
+
+    # This script may be in two valid locations:
+    #
+    #   - At the top of a Piglit source tree, as below.  In this case, Piglit's
+    #     data directory is the source directory itself.
+    #
+    #       ${piglit_source_dir}/${script_name}     -> This script.
+    #       ${piglit_source_dir}/                   -> Piglit's data directory.
+    #       ${piglit_source_dir}/framework          -> Piglit's framework module
+    #
+    if is_piglit_data_dir(abs_script_dir):
+        sys.path.append(abs_script_dir)
+        return
+
+    # Or...
+    #
+    #   - In an installed location.  Piglit's installation layout looks like
+    #     this, where ${ext} may be empty or ".py":
+    #
+    #       ${prefix}/${bindir}/${script_name}${ext}     -> This script.
+    #       ${prefix}/${libdir}/${script_name}/          -> Piglit's data directory.
+    #       ${prefix}/${libdir}/${script_name}/framework -> Piglit framework module.
+    #
+    abs_bindir = abs_script_dir
+    script_basename_noext = os.path.splitext(os.path.basename(__file__))[0]
+    for libdir in ('lib64', 'lib32', 'lib'):
+        abs_libdir = path.normpath(path.join(abs_bindir, '..', libdir))
+        abs_data_dir = path.join(abs_libdir, script_basename_noext)
+        if is_piglit_data_dir(abs_data_dir):
+            sys.path.insert(0, abs_data_dir)
+            return
+
+    print('error: failed to find piglit data directory. exiting...', file=sys.stderr)
+    for test_dir in tested_piglit_data_dirs:
+        print('error: tested directory {0!r}'.format(test_dir), file=sys.stderr)
+    sys.exit(1)
+
+
+setup_module_search_path()
+import framework.programs.run as run
+import framework.programs.summary as summary
+
+
+def main():
+    """ Parse argument and call other executables """
+    parser = argparse.ArgumentParser()
+    subparsers = parser.add_subparsers()
+
+    parse_run = subparsers.add_parser('run',
+                                      add_help=False,
+                                      help="Run a piglit test")
+    parse_run.set_defaults(func=run.run)
+    resume = subparsers.add_parser('resume',
+                                   add_help=False,
+                                   help="resume an interrupted piglit run")
+    resume.set_defaults(func=run.resume)
+    parse_summary = subparsers.add_parser('summary', help='summary generators')
+    summary_parser = parse_summary.add_subparsers()
+    html = summary_parser.add_parser('html',
+                                     add_help=False,
+                                     help='generate html reports from results')
+    html.set_defaults(func=summary.html)
+    console = summary_parser.add_parser('console',
+                                        add_help=False,
+                                        help='print results to terminal')
+    console.set_defaults(func=summary.console)
+    csv = summary_parser.add_parser('csv',
+                                    add_help=False,
+                                    help='generate csv from results')
+    csv.set_defaults(func=summary.csv)
+
+    # Parse the known arguments (piglit run or piglit summary html for
+    # example), and then pass the arguments that this parser doesn't know about
+    # to that executable
+    parsed, args = parser.parse_known_args()
+    returncode = parsed.func(args)
+    sys.exit(returncode)
+
+
+if __name__ == '__main__':
+    main()

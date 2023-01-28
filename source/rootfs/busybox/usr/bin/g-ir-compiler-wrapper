@@ -1,0 +1,2 @@
+#!/bin/sh
+/home/linuxdzm/alientek_workspace/ycoto/fsl-release-bsp/buildQt5.12.9/tmp/sysroots/imx6ull14x14evk/usr/bin/g-ir-scanner-qemuwrapper /home/linuxdzm/alientek_workspace/ycoto/fsl-release-bsp/buildQt5.12.9/tmp/sysroots/imx6ull14x14evk/usr/bin/g-ir-compiler "$@"

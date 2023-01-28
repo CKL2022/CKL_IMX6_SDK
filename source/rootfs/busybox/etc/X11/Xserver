@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+
+. /etc/X11/xserver-common
+
+echo "tslib: $TSLIB_TSDEVICE"
+echo "exec xinit /etc/X11/Xsession -- $BINDIR/$XSERVER $ARGS -dpi $DPI $*"
+
+exec xinit /etc/X11/Xsession -- $BINDIR/$XSERVER $ARGS -dpi $DPI $*

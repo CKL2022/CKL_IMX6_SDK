@@ -1,0 +1,14 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Qt5 UiTools
+Description: Qt UiTools module
+Version: 5.12.9
+Libs: -L${libdir} -lQt5UiTools 
+Libs.private: ${pc_sysrootdir}/usr/lib/libQt5Widgets.so ${pc_sysrootdir}/usr/lib/libQt5Gui.so ${pc_sysrootdir}/usr/lib/libQt5Core.so -lpthread ${pc_sysrootdir}/usr/lib/libQt5Widgets.so ${pc_sysrootdir}/usr/lib/libQt5Gui.so ${pc_sysrootdir}/usr/lib/libQt5Core.so ${pc_sysrootdir}/usr/lib/libGLESv2.so   
+Cflags: -DQT_UITOOLS_LIB -I${includedir}/QtUiTools -I${includedir}
+Requires: Qt5Core Qt5Gui Qt5Widgets
+

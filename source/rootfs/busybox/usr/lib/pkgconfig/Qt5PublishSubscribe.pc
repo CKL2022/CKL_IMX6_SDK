@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Qt5 PublishSubscribe
+Description: Qt PublishSubscribe module
+Version: 5.4.0
+Libs: -L${libdir} -lQt5PublishSubscribe 
+Cflags: -DQT_PUBLISHSUBSCRIBE_LIB -I${includedir}/QtPublishSubscribe -I${includedir}
+Requires: Qt5Core
+

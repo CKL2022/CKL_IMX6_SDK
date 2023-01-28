@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Qt5 SystemInfo
+Description: Qt SystemInfo module
+Version: 5.4.0
+Libs: -L${libdir} -lQt5SystemInfo 
+Cflags: -DQT_SYSTEMINFO_LIB -I${includedir}/QtSystemInfo -I${includedir}
+Requires: Qt5Core Qt5Network Qt5DBus
+

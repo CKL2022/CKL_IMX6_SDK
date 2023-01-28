@@ -1,0 +1,8 @@
+# GTK+ Input Method Modules file
+# Automatically generated file, do not edit
+# Created by /usr/bin/gtk-query-immodules-2.0 from gtk+-2.24.29
+#
+"/usr/lib/gtk-2.0/2.10.0/immodules/libmb-im-invoker.so" 
+"matchbox-im-invoker" "Virtual Keyboard" "" "" "*" 
+
+

@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Enginio
+Description: Enginio module
+Version: 1.8.0
+Libs: -L${libdir} -lEnginio 
+Cflags: -DQT_ENGINIO_LIB -I${includedir}/Enginio -I${includedir}
+Requires: Qt5Core Qt5Network
+

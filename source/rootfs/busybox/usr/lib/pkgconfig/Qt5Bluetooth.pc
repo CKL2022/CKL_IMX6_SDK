@@ -1,0 +1,13 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=/usr/lib
+includedir=/usr/include
+
+
+Name: Qt5 Bluetooth
+Description: Qt Bluetooth module
+Version: 5.12.9
+Libs: -L${libdir} -lQt5Bluetooth 
+Cflags: -DQT_BLUETOOTH_LIB -I${includedir}/QtBluetooth -I${includedir}
+Requires: Qt5Core
+
